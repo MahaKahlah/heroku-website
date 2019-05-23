@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const mongodb = require('mongodb').MongoClient;
+const {MongoClient} = require('mongodb');
 const uuid = require('uuid/v4');
 const session = require('express-session');
 
@@ -20,53 +20,46 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.set('views', path.join(__dirname, '/src/views'));
 app.set('view engine', 'ejs');
 
+
 /// Routs
 const mainRout = require('./src/routes/mainRout');
-
-const checkUser = require('./src/modules/checkUser');
-
 app.use('/', mainRout);
-app.use(session({
-      genid: (req, res) => {
-        console.log('Inside the session middleware')
-        console.log(req.sessionID)
-        return uuid() // use UUIDs for session IDs
-      },
-      secret: 'keyboard cat',
-      resave: false,
-      saveUninitialized: true
-    }))
-    
-    app.get('/hi', (req, res) => {
-      console.log('Inside the homepage callback function')
-      console.log(req.sessionID)
-      res.send(`You hit home page!\n`)
-    })
 
+// modules
+const checkUser = require('./src/modules/checkUser');
+const checkUserNmae = require('./src/modules/checkUserName');
 
+// register page posted data 
 app.post('/register', (req, res) => {
       let username = req.body.username;
       let password = req.body.password;
       let rePassword = req.body.rePassword;
       if(password === rePassword){
-            (async function mongo() {
-                  let client;
-                  try {
-                        client = await mongodb.connect(dbUrl, { useNewUrlParser: true });
-                        const db = client.db(dbName);
-                        const response = await db.collection('users').insert(
-                              {
-                                    userName : username,
-                                    pass : password
+            checkUserNmae(username, (user) => {
+                  if (user) {
+                        (async function mongo() {
+                              let client;
+                              try {
+                                    client = await MongoClient.connect(dbUrl, { useNewUrlParser: true });
+                                    const db = client.db(dbName);
+                                    const response = await db.collection('users').insert(
+                                          {
+                                                userName : username,
+                                                pass : password
+                                          }
+                                    );
+                                    //res.send(response)
+                                    res.redirect('/login');
+                              } catch (error) {
+                                    res.send(error.message);
                               }
-                        );
-                        //res.send(response)
-                        res.redirect('/login');
-                  } catch (error) {
-                        res.send(error.message);
+                              client.close();
+                        }());
+                  } else {
+                        res.render('register', { checkPass : 'This UserName is already used'});
+      
                   }
-                  client.close();
-            }());
+            })
       }else if(password !== rePassword){
             res.render('register', { checkPass : 'Please be sure that the passwords match together '});
       }else{
@@ -74,7 +67,7 @@ app.post('/register', (req, res) => {
       }
 })
 
-
+// login page posted data 
 app.post('/login', (req, res) => {
       let username = req.body.email;
       let password = req.body.password;
@@ -82,7 +75,7 @@ app.post('/login', (req, res) => {
             if (check) {
                 res.redirect('/admin');
             } else {
-                  res.render('login', {login : 'The Email or password are False'});
+                  res.render('login', {login : 'The Email or password are Wrong'});
 
             }
       })
