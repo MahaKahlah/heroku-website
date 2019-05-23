@@ -9,9 +9,9 @@
             <nav class="site-navigation position-relative text-right" id="nav" role="navigation">
 
               <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
-                <li class="home active"><a href="/">Home</a></li>
-                <li class="listings"><a href="/listings">Ads</a></li>
-                <li class="has-children about">
+                <li class="home <%= home %>"><a href="/">Home</a></li>
+                <li class="listings <%= listings %>"><a href="/listings">Ads</a></li>
+                <li class="has-children about <%= about %>">
                   <a href="/about">About</a>
                   <ul class="dropdown">
                     <li><a href="#">The Company</a></li>
@@ -20,11 +20,11 @@
                     <li><a href="#">Careers</a></li>
                   </ul>
                 </li>
-                <li class="blog"><a href="/blog">Blog</a></li>
-                <li class="contact"><a href="/contact">Contact</a></li>
+                <li class="blog <%= blog %>"><a href="/blog">Blog</a></li>
+                <li class="contact <%= contact %>"><a href="/contact">Contact</a></li>
 
-                <li class="ml-xl-3 login"><a href="/login"><span class="border-left pl-xl-4"></span>Log In</a></li>
-                <li class="register"><a href="/register">Register</a></li>
+                <li class="ml-xl-3 login <%= loginActive %>"><a href="/login"><span class="border-left pl-xl-4"></span>Log In</a></li>
+                <li class="register <%= register %>"><a href="/register">Register</a></li>
 
                 <li><a href="#" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a></li>
               </ul>
